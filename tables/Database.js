@@ -3,12 +3,14 @@ const SQLite = require("better-sqlite3");
 const LinksTable = require("./LinksTable.js");
 const WordsTable = require("./WordsTable.js");
 const LinksWordsTable = require("./LinksWordsTable.js");
+const PasswordsTable = require("./PasswordsTable.js")
 
 class Database
 {
 	constructor()
 	{	
 		this.aSQL = new SQLite("./GlossaireGameCodeur.sqlite");
+		this.aSQLPasswords = new SQLite("./Passwords.sqlite");
 		this.aSQL.pragma("synchronous = FULL");
     	this.aSQL.pragma("journal_mode = WAL");
 		this.aSQL.pragma("auto_vacuum = FULL");
@@ -26,10 +28,12 @@ class Database
 		this.aLinks = new LinksTable(this.aSQL);
 		this.aWords = new WordsTable(this.aSQL);
 		this.aLinksWords = new LinksWordsTable(this.aSQL);
+		this.aPasswords = new PasswordsTable(this.aSQLPasswords);
 	}
 	Close()
 	{
 		this.aSQL.close();
+		this.aSQLPasswords.close();
 	}
 	get Links()
 	{
@@ -42,6 +46,10 @@ class Database
 	get LinksWords()
 	{
 		return this.aLinksWords;
+	}
+	get Passwords()
+	{
+		return this.aPasswords;
 	}
 }
 

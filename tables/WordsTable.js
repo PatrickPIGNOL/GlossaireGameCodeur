@@ -13,8 +13,8 @@ class WordsTable extends Table
 		(
 			`CREATE TABLE IF NOT EXISTS Words
 			(
-				WordID TEXT,
-				Word TEXT,				
+				WordID TEXT UNIQUE NOT NULL,
+				Word TEXT UNIQUE NOT NULL,				
 				PRIMARY KEY (WordID)
 			);`
 		).run()
@@ -25,6 +25,13 @@ class WordsTable extends Table
 		(
 			`DROP TABLE IF EXISTS Words;`
 		).run()
+	}
+	SelectID(pWordID)
+	{
+		return this.SQL.prepare
+		(
+			`SELECT rowid, * FROM Words WHERE rowid = ?`
+		).get(pWordID)
 	}
 	SelectWord(pWord)
 	{
@@ -37,17 +44,16 @@ class WordsTable extends Table
 	{
 		return this.SQL.prepare
 		(
-			`SELECT rowid, * FROM Words`
+			`SELECT rowid, * FROM Words ORDER BY WordID`
 		).all()
 	}
 	SelectAllWords(pWord)
 	{
-		const vWord = "%"+pWord.toLowerCase()+"%";
-		console.log(vWord);
+		const vWord = "%" + pWord.toLowerCase() + "%";
 		return this.SQL.prepare
 		(
-			`SELECT rowid, * FROM Words WHERE WordID LIKE ?`
-		).all(vWord)
+			`SELECT rowid, * FROM Words WHERE WordID LIKE ? ORDER BY WordID`
+		).all(vWord);
 	}
 	Insert(pValues)
 	{

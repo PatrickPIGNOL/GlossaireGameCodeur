@@ -13,8 +13,9 @@ class LinksTable extends Table
 		(
 			`CREATE TABLE IF NOT EXISTS Links
 			(
-				Name TEXT UNIQUE,
-				URL TEXT UNIQUE,
+				NameID TEXT UNIQUE NOT NULL,
+				Name TEXT NOT NULL,
+				URL TEXT UNIQUE NOT NULL,
 				PRIMARY KEY (URL)
 			);`
 		).run()
@@ -28,7 +29,7 @@ class LinksTable extends Table
 	}
 	SelectID(pID)
 	{
-		this.SQL.prepare
+		return this.SQL.prepare
 		(
 			"SELECT rowid, * FROM Links WHERE rowid = ?"
 		).get(pID);
@@ -40,12 +41,12 @@ class LinksTable extends Table
 			`SELECT rowid, * FROM Links WHERE URL = ?`
 		).get(pURL)
 	}
-	SelectName(pName)
+	SelectNameID(pNameID)
 	{
 		return this.SQL.prepare
 		(
-			`SELECT rowid, * FROM Links WHERE Name = ?`
-		).get(pName)
+			`SELECT rowid, * FROM Links WHERE NameID = ?`
+		).get(pNameID.toLowerCase())
 	}
 	SelectAll()
 	{
@@ -54,12 +55,12 @@ class LinksTable extends Table
 			`SELECT rowid, * FROM Links ORDER BY Name`
 		).all()
 	}
-	SelectAllName(pName)
+	SelectAllNameID(pName)
 	{
 		return this.SQL.prepare
 		(
-			`SELECT rowid, * FROM Links WHERE Name IS LIKE ? ORDER BY Name`
-		).all("%" + pName + "%")
+			`SELECT rowid, * FROM Links WHERE NameID LIKE ? ORDER BY Name`
+		).all("%" + pName.toLowerCase() + "%")
 	}
 	Insert(pValues)
 	{
@@ -67,11 +68,13 @@ class LinksTable extends Table
 		(
 			`INSERT INTO Links 
 			(
+				NameID,
 				Name, 
 				URL
 			) 
 			VALUES 
 			(
+				@NameID,
 				@Name, 
 				@URL
 			)`
@@ -84,11 +87,13 @@ class LinksTable extends Table
 			`UPDATE Links 
 			SET 
 			(
+				NameID,
 				Name, 
 				URL
 			) 
 			= 
 			(
+				@NameID,
 				@Name,
 				@URL
 			) 

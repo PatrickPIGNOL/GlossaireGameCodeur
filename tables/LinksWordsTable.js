@@ -10,88 +10,98 @@ class LinksWordsTable extends Table
 	Create() 
 	{
 		this.SQL.prepare
+		(
+			`CREATE TABLE IF NOT EXISTS LinksWords
 			(
-				`CREATE TABLE IF NOT EXISTS LinksWords
-				(
-					WordsID BIGINT,
-					LinksID BIGINT,
-					Document TEXT,
-					PRIMARY KEY (WordsID, LinksID)
-				);`
-			).run()
+				WordsID BIGINT NOT NULL,
+				LinksID BIGINT NOT NULL,
+				Document TEXT,
+				PRIMARY KEY (WordsID, LinksID)
+			);`
+		).run()
 	}
 	Drop() 
 	{
 		this.SQL.prepare
-			(
-				`DROP TABLE IF EXISTS LinksWords;`
-			).run()
+		(
+			`DROP TABLE IF EXISTS LinksWords;`
+		).run()
 	}
 	SelectLinks(pLinks) 
 	{
 		return this.SQL.prepare
-			(
-				`SELECT rowid, * FROM LinksWords WHERE LinksID = ?`
-			).get(pLinks)
+		(
+			`SELECT rowid, * FROM LinksWords WHERE LinksID = ?`
+		).all(pLinks)
 	}
+	
 	SelectWords(pWord) 
 	{
 		return this.SQL.prepare
-			(
-				`SELECT rowid, * FROM LinksWords WHERE WordsID = ?`
-			).get(pWord)
+		(
+			`SELECT rowid, * FROM LinksWords WHERE WordsID = ?`
+		).all(pWord)
 	}
+
+	SelectID(pWordID, pLinkID) 
+	{
+		return this.SQL.prepare
+		(
+			`SELECT rowid, * FROM LinksWords WHERE WordsID = ? AND LinksID = ?`
+		).get(pWordID, pLinkID)
+	}
+
 	SelectAll() 
 	{
 		return this.SQL.prepare
-			(
-				`SELECT rowid, * FROM LinksWords`
-			).all()
+		(
+			`SELECT rowid, * FROM LinksWords`
+		).all()
 	}
 	Insert(pValues) 
 	{
 		this.SQL.prepare
+		(
+			`INSERT INTO LinksWords 
 			(
-				`INSERT INTO LinksWords 
-				(
-					WordsID,
-					LinksID,
-					Document
-				) 
-				VALUES 
-				(
-					@WordsID
-					@LinksID,
-					@Document
-				)`
-			).run(pValues)
+				WordsID,
+				LinksID,
+				Document
+			) 
+			VALUES 
+			(
+				@WordsID,
+				@LinksID,
+				@Document
+			)`
+		).run(pValues)
 	}
 	Update(pValues) 
 	{
 		this.SQL.prepare
+		(
+			`UPDATE LinksWords 
+			SET 
 			(
-				`UPDATE LinksWords 
-				SET 
-				(
-					WordsID,
-					LinksID,
-					Document
-				) 
-				= 
-				(
-					@WordsID
-					@LinksID,
-					@Document
-				) 
-				WHERE rowid = @rowid`
-			).run(pValues)
+				WordsID,
+				LinksID,
+				Document
+			) 
+			= 
+			(
+				@WordsID,
+				@LinksID,
+				@Document
+			) 
+			WHERE rowid = @rowid`
+		).run(pValues)
 	}
 	Delete(pID) 
 	{
 		this.SQL.prepare
-			(
-				`DELETE FROM LinksWords WHERE rowid = ?`
-			).run(pID)
+		(
+			`DELETE FROM LinksWords WHERE rowid = ?`
+		).run(pID)
 	}
 }
 
