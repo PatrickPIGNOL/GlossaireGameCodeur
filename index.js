@@ -131,18 +131,21 @@ app.post
 	'/admin/crud/managewords',
 	function(request, response, next)  
 	{
-		const vRequest = Object.freeze({
-			Add: {
-				Word: request.body.AddWord
-			},
-			Update: {
-				ID: request.body.UpdateID,
-				Word: request.body.UpdateWord
-			},
-			Delete:{
-				ID: request.body.DeleteID
+		const vRequest = Object.freeze
+		(
+			{
+				Add: {
+					Word: request.body.AddWord
+				},
+				Update: {
+					ID: request.body.UpdateID,
+					Word: request.body.UpdateWord
+				},
+				Delete:{
+					ID: request.body.DeleteID
+				}
 			}
-		});
+		);
 		const vHTML = vSite.mCrudManageWords(request.body.Login, vRequest);
   		response.send(vHTML);
 	}
@@ -153,7 +156,24 @@ app.post
 	'/admin/crud/managelinks',
 	function(request, response, next)  
 	{
-		const vHTML = vSite.mCrudManageLinks(request.body.Name, request.body.URL);
+		const vRequest = Object.freeze
+		(
+			{
+				Add: {
+					Name: request.body.AddName,
+					URL: request.body.AddURL
+				},
+				Update: {
+					ID: request.body.UpdateID,
+					Name: request.body.UpdateName,
+					URL: request.body.UpdateURL,
+				},
+				Delete: {
+					ID: request.body.DeleteID
+				}
+			}
+		);
+		const vHTML = vSite.mCrudManageLinks(request.body.Login, vRequest);
   		response.send(vHTML);
 	}
 );
@@ -163,7 +183,19 @@ app.post
 	'/admin/crud/managewordslinks',
 	function(request, response, next)  
 	{
-		const vHTML = vSite.mManageWordsLinks(request.body.Login, request.body.Link);
+		const vRequest = Object.freeze
+		(
+			{
+				Add: {
+					WordID: request.body.AddWordID,
+					LinkID: request.body.AddLinkID
+				},
+				Delete: {
+					ID: request.body.DeleteID 
+				}
+			}
+		);
+		const vHTML = vSite.mManageWordsLinks(request.body.Login, vRequest);
   		response.send(vHTML);
 	}
 );

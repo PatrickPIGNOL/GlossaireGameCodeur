@@ -15,7 +15,6 @@ class LinksWordsTable extends Table
 			(
 				WordsID BIGINT NOT NULL,
 				LinksID BIGINT NOT NULL,
-				Document TEXT,
 				PRIMARY KEY (WordsID, LinksID)
 			);`
 		).run()
@@ -65,14 +64,12 @@ class LinksWordsTable extends Table
 			`INSERT INTO LinksWords 
 			(
 				WordsID,
-				LinksID,
-				Document
+				LinksID
 			) 
 			VALUES 
 			(
 				@WordsID,
-				@LinksID,
-				@Document
+				@LinksID
 			)`
 		).run(pValues)
 	}
@@ -84,14 +81,12 @@ class LinksWordsTable extends Table
 			SET 
 			(
 				WordsID,
-				LinksID,
-				Document
+				LinksID
 			) 
 			= 
 			(
 				@WordsID,
-				@LinksID,
-				@Document
+				@LinksID
 			) 
 			WHERE rowid = @rowid`
 		).run(pValues)

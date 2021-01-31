@@ -56,12 +56,12 @@ class Crud extends Admin
 						</form>
 					</TD>
 					<TD>
-						<form action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/addwordslinks" method="post"><input type="hidden" id="Login" name="Login" value=${JSON.stringify(pLogin)}>
+						<form action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/managelinks" method="post"><input type="hidden" id="Login" name="Login" value=${JSON.stringify(pLogin)}>
 							<input class="admin" type="submit" title="Gérer les documents" value="📝Documents"></input>
 						</form>
 					</TD>
 					<TD>
-						<form action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/addwordslinks" method="post"><input type="hidden" id="Login" name="Login" value=${JSON.stringify(pLogin)}>
+						<form action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/managewordslinks" method="post"><input type="hidden" id="Login" name="Login" value=${JSON.stringify(pLogin)}>
 							<input class="admin" type="submit" title="Gerer les liens Mots clés🔗Documents" value="📝Liens Mots clés🔗Documents"></input>
 						</form>
 					</TD>
@@ -178,7 +178,7 @@ class Crud extends Admin
 			let vHTML = this.HTMLHeader;
 			vHTML += `<H2>Rechercher</H2>`;
 			vHTML += this.mCrudForm(vLogin);
-			vHTML += this.mCrudSearchForm(vLogin, vWord.Word);
+			vHTML += this.mCrudSearchForm(vLogin, vLink.Name);
 			vHTML += `<H2>${vLink.Name}</H2>`
 			vHTML += `<a target="_blank" href="${vLink.URL}">${vLink.Name}</a> est présent pour les mots clé suivants :<BR/><ul>`;
 			const vLinksWords = this.Database.LinksWords.SelectLinks(vLink.rowid);
@@ -213,10 +213,10 @@ class Crud extends Admin
 	
 	mCrudManageWords(pLogin, pRequest)
 	{
-		const vLogin = this.mVerify(JSON.parse(pLogin));
 		let vAddStatus = "";
 		let vUpdateStatus = "";
 		let vDeleteStatus = "";
+		const vLogin = this.mVerify(JSON.parse(pLogin));		
 		if(vLogin)
 		{
 			if(pRequest)
@@ -249,7 +249,7 @@ class Crud extends Admin
 						try
 						{
 							this.Database.Words.Update(vWord);
-							vUpdateStatus = `Le mot clé selectioné à bien été modifié en ${pRequest.Update.Word}.`
+							vUpdateStatus = `Le mot clé selectioné à bien été modifié en "${pRequest.Update.Word}".`
 						}
 						catch(e)
 						{
@@ -286,18 +286,14 @@ class Crud extends Admin
 			vHTML += this.mCrudForm(vLogin);
 			vHTML += `<H2>Gérer les mot clé</H2>`;
 			vHTML += this.mCrudAddWordForm(vLogin, vAddStatus);
-			vHTML += this.mCrudUpdateForm(vLogin, vUpdateStatus);
-			vHTML += this.mCrudDeleteForm(vLogin, vDeleteStatus);
+			vHTML += this.mCrudUpdateWordForm(vLogin, vUpdateStatus);
+			vHTML += this.mCrudDeleteWordForm(vLogin, vDeleteStatus);
 			vHTML += this.mDataLists();
 			this.aDatabase.Words.SelectAll().forEach
 			(
 				vWordFound =>
 				{
-					if(vWordFound && vWordFound.rowid && !(vWordFound.Word))
-					{
-						this.Database.Words.Delete(vWordFound.rowid);
-					}
-					else if(vWordFound && vWordFound.rowid && vWordFound.WordID && vWordFound.Word)
+					if(vWordFound && vWordFound.rowid && vWordFound.WordID && vWordFound.Word)
 					{
 						vHTML += this.mCrudWordsSearchResults(vLogin, vWordFound);
 					}
@@ -333,18 +329,22 @@ class Crud extends Admin
 		let vHTML = `<H2>Ajouter</H2>`
 		vHTML += pAddStatus;
 		vHTML += `<FORM action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/managewords" method="post"><input id="Login" name="Login" type="hidden" value=${JSON.stringify(pLogin)}>
-			<input type="text" size="40" list="WordsList" id="AddWord" name="AddWord" placeholder="Tapez ici un nouveau mot clé...">
+			Mot clé <input type="text" size="40" list="WordsList" id="AddWord" name="AddWord" placeholder="Tapez ici un nouveau mot clé...">
 			<input type="submit" value="Ajouter">			
 			</FORM><HR/>`;
 		return vHTML;
 	}
 
-	mCrudUpdateForm(pLogin, pUpdateStatus)
+	mCrudUpdateWordForm(pLogin, pUpdateStatus)
 	{
 		let vHTML = `<H2>Modifier</H2>`
 		vHTML += pUpdateStatus;
 		vHTML += `<FORM action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/managewords" method="post"><input id="Login" name="Login" type="hidden" value=${JSON.stringify(pLogin)}>
-			<select id="UpdateID" name="UpdateID" required>`
+		<TABLE>
+			<TR>
+				<TD>
+					Mot clé à modifier </TD>
+				<TD><select id="UpdateID" style="width: 26em;" name="UpdateID" required>`
 		this.Database.Words.SelectAll().forEach
 		(
 			vWordFound =>
@@ -352,18 +352,42 @@ class Crud extends Admin
 				vHTML += `<option value="${vWordFound.rowid}">${vWordFound.Word}</option>`
 			}
 		);	
-		vHTML += `</select>
-			<input type="text" size="40" list="WordsList" id="UpdateWord" name="UpdateWord" placeholder="Tapez ici la modification">
-			<input type="submit" value="Modifier">
-			</FORM><HR/>`;
+		vHTML += `</select></TD>
+				<TD></TD>
+			</TR>
+			<TR>
+				<TD>Nouvelle valeur </TD>
+				<TD><input type="text" size="40" list="WordsList" id="UpdateWord" name="UpdateWord" placeholder="Tapez ici la modification"></TD>
+				<TD><input type="submit" value="Modifier"></TD>
+			</TR>
+		</TABLE>
+			</FORM>
+			<script type="text/javascript">
+			let vSelect = document.getElementById('UpdateID');
+			vSelect.addEventListener("change", function (event) 
+			{
+				mOnSelect(event);
+			});
+			window.addEventListener("load",function()
+			{
+    			mOnSelect(event);
+			},false);
+			function mOnSelect(event)
+			{
+				const vSelect = document.getElementById('UpdateID');
+				const vUpdateWord = document.getElementById('UpdateWord');
+				vUpdateWord.value = vSelect.options[vSelect.selectedIndex].label
+			}
+			</script>
+			<HR/>`;
 		return vHTML;
 	}
 
-	mCrudDeleteForm(pLogin, pDeleteStatus)
+	mCrudDeleteWordForm(pLogin, pDeleteStatus)
 	{
-		let vHTML = `<H2>Supprimer</H2>`
+		let vHTML = `<H2>Supprimer</H2><div id="error">`
 		vHTML += pDeleteStatus;
-		vHTML += `<FORM onsubmit="return confirm('Êtes vous sûr de vouloir supprimer ce mot clé et tous les liens s'y raportant ?\nCette action n'est pas annulable.');" action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/managewords" method="post"><input id="Login" name="Login" type="hidden" value=${JSON.stringify(pLogin)}>
+		vHTML += `</div><FORM id="DeleteForm" action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/managewords" method="post"><input id="Login" name="Login" type="hidden" value=${JSON.stringify(pLogin)}>
 			<select id="DeleteID" name="DeleteID" required>`
 		this.Database.Words.SelectAll().forEach
 		(
@@ -372,13 +396,147 @@ class Crud extends Admin
 				vHTML += `<option value="${vWordFound.rowid}">${vWordFound.Word}</option>`
 			}
 		);	
-		vHTML += `</select><input type="submit" value="Supprimer"></FORM><HR/>`;
+		vHTML += `</select><input id="SubmitDeleteForm" type="submit" value="Supprimer"></FORM><HR/>
+		<script type="text/javascript">		
+		let form = document.getElementById('DeleteForm');
+		form.addEventListener("submit", function (event) 
+		{
+			const form = document.getElementById('DeleteForm');
+			const button = document.getElementById('SubmitDeleteForm');
+			const error = document.getElementById('error');
+			if (! window.confirm("Cette action n'est pas annulable. Êtes vous sûr de vouloir supprimer ce mot clé et tous les liens s'y raportant ? ")) 
+			{
+				error.innerHTML = "Opération annulé par l'utilisateur";
+				error.className = "error active";    
+				event.preventDefault();
+			}
+		}, false);
+		</script>`;
 		return vHTML;
 	}
 
-	mCrudManageLinks()
+	mCrudManageLinks(pLogin, pRequest)
 	{
-		
+		let vAddStatus = "";
+		let vUpdateStatus = "";
+		let vDeleteStatus = "";
+		const vLogin = this.mVerify(JSON.parse(pLogin));
+		if(vLogin)
+		{
+			if(pRequest)
+			{
+
+			}
+			let vHTML = this.HTMLHeader;
+			vHTML += this.mCrudForm(vLogin);
+			vHTML += `<H2>Gérer les documents</H2>`;
+			vHTML += this.mCrudAddLinkForm(vLogin, vAddStatus);
+			vHTML += this.mCrudUpdateLinkForm(vLogin, vUpdateStatus);
+			vHTML += this.mCrudDeleteLinkForm(vLogin, vDeleteStatus);
+			vHTML += this.mDataLists();
+			this.aDatabase.Links.SelectAll().forEach
+			(
+				vLinkFound =>
+				{
+					if(vLinkFound && vLinkFound.rowid && !(vLinkFound.Name))
+					{
+						this.Database.Links.Delete(vLinkFound.rowid);
+					}
+					else if(vLinkFound && vLinkFound.rowid && vLinkFound.NameID && vLinkFound.Name && vLinkFound.URL)
+					{
+						vHTML += this.mCrudLinksSearchResults(vLogin, vLinkFound);
+					}
+				}
+			)
+			vHTML += this.HTMLFooter;
+			return vHTML;	
+		}
+		else
+		{
+			return `<script type="text/javascript">
+					window.location.replace("https://glossairegamecodeur.patrickpignol.repl.co/admin/");
+			</script>`
+		}		
+	}
+
+	mCrudAddLinkForm(pLogin, pAddStatus)
+	{
+		let vHTML = `<H2>Ajouter</H2>`
+		vHTML += pAddStatus;
+		vHTML += `<FORM action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/managewords" method="post"><input id="Login" name="Login" type="hidden" value=${JSON.stringify(pLogin)}>
+			<LABEL>Nom du document 
+			<input type="text" size="40" list="WordsList" id="AddName" name="AddWord" placeholder="Tapez ici un nouveau mot clé..."><BR/></LABEL>
+			<LABEL>URL du document
+			<input type="text" size="40" list="WordsList" id="AddName" name="AddWord" placeholder="Tapez ici un nouveau mot clé..."></LABEL>
+			<input type="submit" value="Ajouter">			
+			</FORM><HR/>`;
+		return vHTML;
+	}
+
+	mCrudUpdateLinkForm(pLogin, pUpdateStatus)
+	{
+		let vHTML = `<H2>Modifier</H2>`
+		vHTML += pUpdateStatus;
+		vHTML += `<FORM action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/managelinkss" method="post"><input id="Login" name="Login" type="hidden" value=${JSON.stringify(pLogin)}>
+		<TABLE>
+			<TR>
+				<TD>Document à modifier </TD>
+				<TD><select id="UpdateID" style="width: 344px;" name="UpdateID" required>`
+		this.Database.Links.SelectAll().forEach
+		(
+			vLinkFound =>
+			{	
+				vHTML += `<option value="${vLinkFound.rowid}">${vLinkFound.Name}</option>`
+			}
+		);	
+		vHTML += `</select></TD>
+				<TD>
+				</TD>
+			</TR>
+			<TR>
+				<TD>Nom du document </TD><TD><input type="text" size="40" list="LinksList" id="UpdateName" name="UpdateName" placeholder="Tapez ici la modification"></TD>
+				<TD></TD>
+			</TR>
+			<TR>
+				<TD>URL du document</TD>
+				<TD><input type="text" size="40" list="URLList" id="UpdateName" name="UpdateName" placeholder="Tapez ici la modification"></TD>
+				<TD><input type="submit" value="Modifier"></TD>
+			</TR>
+		</TABLE>
+			</FORM><HR/>`;
+		return vHTML;
+	}
+
+	mCrudDeleteLinkForm(pLogin, pDeleteStatus)
+	{
+		let vHTML = `<H2>Supprimer</H2><div id="error">`
+		vHTML += pDeleteStatus;
+		vHTML += `</div><FORM id="DeleteForm" action="https://glossairegamecodeur.patrickpignol.repl.co/admin/crud/managelinks" method="post"><input id="Login" name="Login" type="hidden" value=${JSON.stringify(pLogin)}>
+			<select id="DeleteID" name="DeleteID" required>`
+		this.Database.Links.SelectAll().forEach
+		(
+			vLinkFound =>
+			{	
+				vHTML += `<option value="${vLinkFound.rowid}">${vLinkFound.Name}</option>`
+			}
+		);	
+		vHTML += `</select><input id="SubmitDeleteForm" type="submit" value="Supprimer"></FORM><HR/>
+		<script type="text/javascript">
+		let form = document.getElementById('DeleteForm');
+		form.addEventListener("submit", function (event) 
+		{
+			const form = document.getElementById('DeleteForm');
+			const button = document.getElementById('SubmitDeleteForm');
+			const error = document.getElementById('error');
+			if (! window.confirm("Cette action n'est pas annulable. Êtes vous sûr de vouloir supprimer ce document et tous les liens s'y raportant ? ")) 
+			{
+				error.innerHTML = "Opération annulé par l'utilisateur";
+				error.className = "error active";    
+				event.preventDefault();
+			}
+		}, false);
+		</script>`;
+		return vHTML;
 	}
 
 	mCrudWordsLinks()
