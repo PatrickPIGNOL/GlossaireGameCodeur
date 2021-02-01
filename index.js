@@ -80,7 +80,7 @@ app.get
 	'/admin/signin',
 	(request, response) => 
 	{
-		const vHTML = vSite.AdminSignin;
+		const vHTML = vSite.Signin;
 		response.send(vHTML);
 	}
 );
@@ -90,7 +90,7 @@ app.post
 	'/admin/signin',
 	(request, response) => 
 	{
-		const vHTML = vSite.mAdminSignin(request.body.EMail, request.body.Password, request.body.ConfirmPassword);
+		const vHTML = vSite.mSignin(request.body.EMail, request.body.Password, request.body.ConfirmPassword);
 		response.send(vHTML);
 	}
 );
@@ -199,3 +199,14 @@ app.post
   		response.send(vHTML);
 	}
 );
+/*
+app.get
+(
+	'/admin/crud/base',
+	function(request, response, next)  
+	{
+		const vHTML = vSite.mBase();
+  		response.send(vHTML);
+	}
+);
+*/

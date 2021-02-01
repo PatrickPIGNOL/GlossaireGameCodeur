@@ -35,7 +35,7 @@ class PasswordsTable extends Table
 		return this.SQL.prepare
 		(
 			`SELECT COUNT(DISTINCT EMail) AS "Count" FROM Passwords`
-		).all();
+		).get();
 	}
 
 	SelectEMail(pEMail)

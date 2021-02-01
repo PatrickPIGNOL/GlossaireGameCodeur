@@ -26,6 +26,13 @@ class WordsTable extends Table
 			`DROP TABLE IF EXISTS Words;`
 		).run()
 	}
+	SelectCount()
+	{
+		return this.SQL.prepare
+		(
+			`SELECT COUNT(DISTINCT WordID) AS "Count" FROM Words`
+		).get();
+	}
 	SelectID(pWordID)
 	{
 		return this.SQL.prepare

@@ -28,7 +28,7 @@ class Admin extends Research
 					</TR>`
 		if
 		(
-			this.Database.Passwords.SelectCount()[0].Count
+			this.Database.Passwords.SelectCount().Count
 			<
 			this.Config.MaxAdmins
 		)
@@ -78,7 +78,7 @@ class Admin extends Research
 						</TR>`
 			if
 			(
-				this.Database.Passwords.SelectCount()[0].Count
+				this.Database.Passwords.SelectCount().Count
 				<
 				this.Config.MaxAdmins
 			)
@@ -167,13 +167,13 @@ class Admin extends Research
 		let vHTML = this.HTMLHeader;
 		if
 		(
-			this.Database.Passwords.SelectCount()[0].Count 
+			this.Database.Passwords.SelectCount().Count 
 			<
 			this.Config.MaxAdmins
 		)
 		{
 			vHTML += `<H2>Inscription</H2>`;
-			vHTML += this.mAdminSigninForm();
+			vHTML += this.mSigninForm();
 		}
 		else
 		{
@@ -305,7 +305,7 @@ class Admin extends Research
 		vHTML += this.HTMLHeader;
 		if
 		(
-			this.Database.Passwords.SelectCount()[0].Count 
+			this.Database.Passwords.SelectCount().Count 
 			<
 			this.Config.MaxAdmins
 		)
@@ -314,20 +314,26 @@ class Admin extends Research
 			
 			if(vEmailRegexp.test(pEmail) && vPasswordRegexp.test(pPassword) && (pPassword === pConfirmPassword))
 			{
-				const vHash = crypto.createHash('sha256');
-				vHash.update(pPassword);
-				const vPasswordHash = vHash.digest('hex');
-				console.log(vPasswordHash)
-				this.Database.Passwords.Insert
-				(
-					{
-						EMail: pEmail,
-						Hash: vPasswordHash
-					}
-				);
-				vHTML += `<script type="text/javascript">
-					window.location.replace("https://glossairegamecodeur.patrickpignol.repl.co/admin/");
-				</script>`;
+				if(!this.Database.Passwords.SelectEMail(pEmail))
+				{
+					const vHash = crypto.createHash('sha256');
+					vHash.update(pPassword);
+					const vPasswordHash = vHash.digest('hex');
+					this.Database.Passwords.Insert
+					(
+						{
+							EMail: pEmail,
+							Hash: vPasswordHash
+						}
+					);
+					vHTML += `<script type="text/javascript">
+						window.location.replace("https://glossairegamecodeur.patrickpignol.repl.co/admin/");
+					</script>`;
+				}
+				else
+				{
+					vHTML += `L'utilisateur est déjà enregistré. Si vous avez des problèmes de connections, contactez le créateur du moteur.`
+				}
 			}
 			else
 			{

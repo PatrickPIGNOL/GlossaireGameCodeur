@@ -26,6 +26,18 @@ class LinksWordsTable extends Table
 			`DROP TABLE IF EXISTS LinksWords;`
 		).run()
 	}
+	SelectCount()
+	{
+		return this.SQL.prepare
+		(
+			`SELECT  COUNT(*) as Count
+			FROM
+        	(
+            	SELECT  DISTINCT WordsID, LinksID
+            	FROM    LinksWords
+        	)`
+		).get();
+	}
 	SelectLinks(pLinks) 
 	{
 		return this.SQL.prepare
@@ -40,6 +52,14 @@ class LinksWordsTable extends Table
 		(
 			`SELECT rowid, * FROM LinksWords WHERE WordsID = ?`
 		).all(pWord)
+	}
+
+	SelectRowID(pRowID)
+	{
+		return this.SQL.prepare
+		(
+			`SELECT rowid, * FROM LinksWords WHERE rowid = ?`
+		).get(pRowID)
 	}
 
 	SelectID(pWordID, pLinkID) 
@@ -71,24 +91,6 @@ class LinksWordsTable extends Table
 				@WordsID,
 				@LinksID
 			)`
-		).run(pValues)
-	}
-	Update(pValues) 
-	{
-		this.SQL.prepare
-		(
-			`UPDATE LinksWords 
-			SET 
-			(
-				WordsID,
-				LinksID
-			) 
-			= 
-			(
-				@WordsID,
-				@LinksID
-			) 
-			WHERE rowid = @rowid`
 		).run(pValues)
 	}
 	Delete(pID) 

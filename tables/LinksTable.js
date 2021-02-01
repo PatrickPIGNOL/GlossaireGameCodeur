@@ -27,6 +27,13 @@ class LinksTable extends Table
 			`DROP TABLE IF EXISTS Links;`
 		).run()
 	}
+	SelectCount()
+	{
+		return this.SQL.prepare
+		(
+			`SELECT COUNT(DISTINCT URL) AS "Count" FROM Links`
+		).get();
+	}
 	SelectID(pID)
 	{
 		return this.SQL.prepare

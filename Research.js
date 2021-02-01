@@ -9,7 +9,7 @@ class Research extends Site
 
 	get HTMLHeader()
 	{
-		return `<HTML><HEAD><TITLE>${this.Title}</TITLE><link rel="stylesheet" href="/css.css"></HEAD><BODY><H1>${this.Title}</H1>`;
+		return `<HTML><HEAD><TITLE>${this.Title}</TITLE><link rel="stylesheet" href="/css.css"></HEAD><BODY><H1>${this.Title}</H1><div class="credits">créé par patrick pignol</div>`;
 	}
 
 	get HTMLFooter()
@@ -138,19 +138,46 @@ class Research extends Site
 	mWord(pWord)
 	{
 		let vHTML = this.HTMLHeader;
+		console.log(pWord)
 		const vWord = this.Database.Words.SelectWord(pWord);
 		vHTML += `<H2>Rechercher</H2>`;
 		vHTML += this.mWelcomeForm(vWord.Word);
 		vHTML += `<H2>${vWord.Word}</H2>`
 		//vHTML += this.mWordForm();
 		vHTML += `${vWord.Word} est présent dans les documents suivants :<BR/><ul>`;
+		const vLinks = new Array();
 		const vLinksWords = this.Database.LinksWords.SelectWords(vWord.rowid);
 		vLinksWords.forEach
 		(
 			vLinkWord=>
 			{
 				const vLink = this.Database.Links.SelectID(vLinkWord.LinksID);
-				vHTML += `<li><a target="_blank" href="${vLink.URL}">${vLink.Name}</a></li>`;
+				vLinks.push(vLink);				
+			}
+		);
+		vLinks.sort
+		(
+			(a, b)=> 
+			{
+				if (a.Name < b.Name)
+				{
+     				return -1;
+				}
+				else if (a.Name > b.Name)
+				{
+					return 1;
+				}
+				else
+				{
+					return 0;
+				}
+			}
+		);
+		vLinks.forEach
+		(
+			vLinkFound=>
+			{
+				vHTML += `<li><a target="_blank" href="${vLinkFound.URL}">${vLinkFound.Name}</a></li>`;
 			}
 		);
 		vHTML += `</ul>`;
@@ -184,6 +211,7 @@ class Research extends Site
 		vHTML += `<H2>${vLink.Name}</H2>`
 		//vHTML += this.mLinkForm();
 		vHTML += `<a href="${vLink.URL}">${vLink.Name}</a> est présent pour les mots clé suivants :<BR/><ul>`;
+		let vWords = new Array();
 		const vLinksWords = this.Database.LinksWords.SelectLinks(vLink.rowid);
 		vLinksWords.forEach
 		(
@@ -192,16 +220,43 @@ class Research extends Site
 				const vWord = this.Database.Words.SelectID(vLinkWord.WordsID);
 				if(vWord)
 				{
-					vHTML  += `
-						<li>
-							<form id="Word${vWord.rowid}" action="https://glossairegamecodeur.patrickpignol.repl.co/Word" method="post">
-								<input id="Word" name="Word" type="hidden" value="${vWord.Word}">
-								<a href="javascript:{}" onclick="document.getElementById('Word${vWord.rowid}').submit();">${vWord.Word}</a>
-							</form>
-						</li>`;
+					vWords.push(vWord);
 				}
 			}
 		);
+		vWords.sort
+		(
+			(a, b)=> 
+			{
+				if (a.Word < b.Word)
+				{
+     				return -1;
+				}
+				else if (a.Word > b.Word)
+				{
+					return 1;
+				}
+				else
+				{
+					return 0;
+				}
+			}
+		);
+		vWords.forEach
+		(		
+			vWordFound=>
+			{
+				vHTML  += `
+					<li>
+						<form id="Word${vWordFound.rowid}" action="https://glossairegamecodeur.patrickpignol.repl.co/Word" method="post">
+							<input id="Word" name="Word" type="hidden" value="${vWordFound.Word}">
+							<a href="javascript:{}" onclick="document.getElementById('Word${vWordFound.rowid}').submit();">${vWordFound.Word}</a>
+						</form>
+					</li>`;
+			}
+		);
+
+
 		vHTML += `</ul>`;
 		vHTML += this.HTMLFooter;
 		return vHTML;
