@@ -1,6 +1,5 @@
 const Crud = require("./Crud.js")
 const express = require('express');
-const vSite = new Crud("Glossaire GameCodeur");
 
 const app = express();
 app.use(express.static("public"));
@@ -14,6 +13,8 @@ app.listen
   		console.log('server started');
 	}
 );
+
+const vSite = new Crud("Glossaire GameCodeur");
 
 app.get
 (

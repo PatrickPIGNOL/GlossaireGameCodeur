@@ -11,6 +11,7 @@ class Database
 	{	
 		this.aSQL = new SQLite("./GlossaireGameCodeur.sqlite");
 		this.aSQLPasswords = new SQLite("./Passwords.sqlite");
+		console.log("Database openned.")
 		this.aSQL.pragma("synchronous = FULL");
     	this.aSQL.pragma("journal_mode = WAL");
 		this.aSQL.pragma("auto_vacuum = FULL");
@@ -34,6 +35,7 @@ class Database
 	{
 		this.aSQL.close();
 		this.aSQLPasswords.close();
+		console.log("Database closed properly.")
 	}
 	get Links()
 	{
