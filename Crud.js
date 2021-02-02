@@ -772,13 +772,7 @@ class Crud extends Admin
 			}
 			vHTML += this.mDataLists();
 			vHTML += `<TABLE>`;
-			this.aDatabase.LinksWords.SelectAll().forEach
-			(
-				vLinkWordFound =>
-				{
-					vHTML += this.mCrudLinksWord(vLogin, vLinkWordFound)
-				}
-			)
+			vHTML += this.mCrudLinksWord(vLogin);
 			vHTML += `</TABLE>`;
 			vHTML += this.HTMLFooter;
 			return vHTML;
@@ -841,25 +835,72 @@ class Crud extends Admin
 		return vHTML;
 	}
 
-	mCrudLinksWord(pLogin, pLinkWord)
+	mCrudLinksWord(pLogin)
 	{
-		const vWord = this.Database.Words.SelectID(pLinkWord.WordsID);
-		const vLink = this.Database.Links.SelectID(pLinkWord.LinksID);
-		if(vWord && vLink)
-		{
-			return `
-				<TR>
-					<TD>${this.mCrudWordsSearchResults(pLogin, vWord)}</TD>
-					<TD>🔗</TD>
-					<TD>${this.mCrudLinksSearchResults(pLogin, vLink)}</TD>
-				</TR>`;
-		}
-		else
-		{
-			return ``;
-		}		
+		let vHTML = "";
+		let vRows = new Array();
+		this.aDatabase.LinksWords.SelectAll().forEach
+		(
+			vLinkWordFound=>
+			{
+				const vWord = this.Database.Words.SelectID(vLinkWordFound.WordsID);
+				const vLink = this.Database.Links.SelectID(vLinkWordFound.LinksID);
+				if(vWord && vLink)
+				{
+					vRows.push
+					(
+						{
+							Word: vWord,
+							Link: vLink
+						}
+					);
+				}
+			}
+		)
+		vRows.sort
+		(
+			(a, b)=> 
+			{
+				if (a.Word.Word < b.Word.Word)
+				{
+					return -1;
+				}
+				else if (a.Word.Word > b.Word.Word)
+				{
+					return 1;
+				}
+				else
+				{
+					if(a.Link.Name < b.Link.Name)
+					{
+						return -1;
+					}
+					else if(a.Link.Name > b.Link.Name)
+					{
+						return 1;
+					}
+					else
+					{
+						return 0;
+					}
+				}
+			}
+		);
+		vRows.forEach
+		(
+			vRowFound=>
+			{
+				vHTML += `
+					<TR>
+						<TD>${this.mCrudWordsSearchResults(pLogin, vRowFound.Word)}</TD>
+						<TD>🔗</TD>
+						<TD>${this.mCrudLinksSearchResults(pLogin, vRowFound.Link)}</TD>
+					</TR>`;
+			}
+		);
+		return vHTML;
 	}
-	mBase(pLogin)
+	mBase()
 	{
 		
 		let vHTML = "Words:<BR/><HR/>";
