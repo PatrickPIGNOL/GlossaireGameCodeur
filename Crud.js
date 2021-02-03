@@ -771,7 +771,7 @@ class Crud extends Admin
 				vHTML += `Aucune association possible... Veuillez créer des mots clés et des documents...`
 			}
 			vHTML += this.mDataLists();
-			vHTML += `<TABLE>`;
+			vHTML += `<TABLE border=0>`;
 			vHTML += this.mCrudLinksWord(vLogin);
 			vHTML += `</TABLE>`;
 			vHTML += this.HTMLFooter;
@@ -831,6 +831,20 @@ class Crud extends Admin
 				vHTML += `</select>
 				<input id="SubmitDeleteForm" type="submit" value="Supprimer">
 			</FORM>
+			<script type="text/javascript">
+				const form = document.getElementById('DeleteForm');
+				form.addEventListener("submit", function (event) 
+				{
+					const form = document.getElementById('DeleteForm');
+					const button = document.getElementById('SubmitDeleteForm');
+					const error = document.getElementById('error');
+					if (! window.confirm("Cette action n'est pas annulable. Êtes vous sûr de vouloir supprimer ce lien ? ")) 
+					{
+						error.innerHTML = "Opération annulé par l'utilisateur";   
+						event.preventDefault();
+					}
+				}, false);
+			</script>
 			<HR/>`;
 		return vHTML;
 	}
@@ -886,16 +900,27 @@ class Crud extends Admin
 				}
 			}
 		);
+		let vLine = 0;
+		let vColor = "";
 		vRows.forEach
 		(
 			vRowFound=>
 			{
+				if(vLine % 2 === 0)
+				{
+					vColor= `style="background-color: #E0E0E0;"`;
+				}
+				else
+				{
+					vColor= `style="background-color: #F8F8F8;"`;
+				}
 				vHTML += `
-					<TR>
+					<TR ${vColor}>
 						<TD>${this.mCrudWordsSearchResults(pLogin, vRowFound.Word)}</TD>
 						<TD>🔗</TD>
 						<TD>${this.mCrudLinksSearchResults(pLogin, vRowFound.Link)}</TD>
 					</TR>`;
+				vLine++;
 			}
 		);
 		return vHTML;
