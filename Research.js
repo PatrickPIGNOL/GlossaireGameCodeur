@@ -210,7 +210,7 @@ class Research extends Site
 		vHTML += this.mWelcomeForm(vLink.Name);
 		vHTML += `<H2>${vLink.Name}</H2>`
 		//vHTML += this.mLinkForm();
-		vHTML += `<a href="${vLink.URL}">${vLink.Name}</a> est présent pour les mots clé suivants :<BR/><ul>`;
+		vHTML += `<a target="_blank" href="${vLink.URL}">${vLink.Name}</a> est présent pour les mots clé suivants :<BR/><ul>`;
 		let vWords = new Array();
 		const vLinksWords = this.Database.LinksWords.SelectLinks(vLink.rowid);
 		vLinksWords.forEach
